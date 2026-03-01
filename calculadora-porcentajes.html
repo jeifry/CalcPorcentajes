@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Porcentajes</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --border: #2a2a2a;
+    --accent: #c8f135;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  header h1 span { color: var(--accent); }
+  header p { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+
+  .card:focus-within { border-color: var(--accent); }
+
+  .card h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .card h2 .num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-size: 0.75rem;
+    margin-right: 8px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  input[type="number"] {
+    width: 100%;
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus { border-color: var(--accent); }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .result {
+    margin-top: 20px;
+    background: #1a1a1a;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-height: 54px;
+  }
+
+  .result .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    transition: all 0.2s;
+  }
+
+  .result .label-res {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* special card full width */
+  .card.full { grid-column: 1 / -1; }
+
+  .card.full .result .val { color: var(--accent2); }
+  .card.full { border-color: #2a2a2a; }
+  .card.full:focus-within { border-color: var(--accent2); }
+  .card.full h2 { color: var(--accent2); }
+  .card.full h2 .num { background: var(--accent2); }
+  .card.full input[type="number"]:focus { border-color: var(--accent2); }
+  .card.full .result { border-left-color: var(--accent2); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  footer {
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CALCULADORA<br><span>%</span> PORCENTAJES</h1>
+  <p>4 modos de cálculo instantáneo</p>
+</header>
+
+<div class="grid">
+
+  <!-- 1: X% de Y -->
+  <div class="card">
+    <h2><span class="num">1</span> ¿Cuánto es X% de Y?</h2>
+    <label>Porcentaje (%)</label>
+    <input type="number" id="c1p" placeholder="ej: 15" oninput="calc1()">
+    <label>Valor base</label>
+    <input type="number" id="c1v" placeholder="ej: 200" oninput="calc1()">
+    <div class="result">
+      <span class="val" id="r1">—</span>
+      <span class="label-res" id="r1l"></span>
+    </div>
+  </div>
+
+  <!-- 2: X es qué % de Y -->
+  <div class="card">
+    <h2><span class="num">2</span> X es ¿qué % de Y?</h2>
+    <label>Valor parcial (X)</label>
+    <input type="number" id="c2x" placeholder="ej: 30" oninput="calc2()">
+    <label>Valor total (Y)</label>
+    <input type="number" id="c2y" placeholder="ej: 150" oninput="calc2()">
+    <div class="result">
+      <span class="val" id="r2">—</span>
+      <span class="label-res" id="r2l"></span>
+    </div>
+  </div>
+
+  <!-- 3: Aumento / descuento -->
+  <div class="card">
+    <h2><span class="num">3</span> Aumentar / Descontar %</h2>
+    <label>Valor original</label>
+    <input type="number" id="c3v" placeholder="ej: 500" oninput="calc3()">
+    <div class="row2">
+      <div>
+        <label>% Aumento</label>
+        <input type="number" id="c3a" placeholder="ej: 10" oninput="calc3()">
+      </div>
+      <div>
+        <label>% Descuento</label>
+        <input type="number" id="c3d" placeholder="ej: 20" oninput="calc3()">
+      </div>
+    </div>
+    <div class="result" style="flex-direction:column; align-items:flex-start; gap:4px;">
+      <div style="display:flex; gap:8px; align-items:baseline;">
+        <span style="font-size:0.7rem; color:var(--muted);">+</span>
+        <span class="val" id="r3a" style="font-size:1.4rem;">—</span>
+        <span class="label-res" id="r3al"></span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:baseline;">
+        <span style="font-size:0.7rem; color:var(--muted);">−</span>
+        <span class="val" id="r3d" style="font-size:1.4rem;">—</span>
+        <span class="label-res" id="r3dl"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Variación porcentual -->
+  <div class="card full">
+    <h2><span class="num">4</span> Variación % entre dos valores</h2>
+    <div class="row2">
+      <div>
+        <label>Valor inicial</label>
+        <input type="number" id="c4a" placeholder="ej: 80" oninput="calc4()">
+      </div>
+      <div>
+        <label>Valor final</label>
+        <input type="number" id="c4b" placeholder="ej: 100" oninput="calc4()">
+      </div>
+    </div>
+    <div class="result">
+      <span class="val" id="r4">—</span>
+      <span class="label-res" id="r4l"></span>
+    </div>
+  </div>
+
+</div>
+
+<footer>Todos los cálculos son instantáneos · Sin anuncios · Sin datos enviados</footer>
+
+<script>
+  function fmt(n) {
+    if (n === null || isNaN(n) || !isFinite(n)) return null;
+    return parseFloat(n.toFixed(4)).toLocaleString('es-DO', { maximumFractionDigits: 4 });
+  }
+
+  function calc1() {
+    const p = parseFloat(document.getElementById('c1p').value);
+    const v = parseFloat(document.getElementById('c1v').value);
+    const res = (p / 100) * v;
+    document.getElementById('r1').textContent = (isNaN(res) || isNaN(p) || isNaN(v)) ? '—' : fmt(res);
+    document.getElementById('r1l').textContent = (!isNaN(res) && !isNaN(p) && !isNaN(v)) ? `es el ${p}% de ${v}` : '';
+  }
+
+  function calc2() {
+    const x = parseFloat(document.getElementById('c2x').value);
+    const y = parseFloat(document.getElementById('c2y').value);
+    const res = (x / y) * 100;
+    document.getElementById('r2').textContent = (isNaN(res) || y === 0) ? '—' : fmt(res) + '%';
+    document.getElementById('r2l').textContent = (!isNaN(res) && y !== 0) ? `${x} de ${y}` : '';
+  }
+
+  function calc3() {
+    const v = parseFloat(document.getElementById('c3v').value);
+    const a = parseFloat(document.getElementById('c3a').value);
+    const d = parseFloat(document.getElementById('c3d').value);
+
+    const ra = v + (v * a / 100);
+    const rd = v - (v * d / 100);
+
+    document.getElementById('r3a').textContent = (!isNaN(ra) && !isNaN(a) && !isNaN(v)) ? fmt(ra) : '—';
+    document.getElementById('r3al').textContent = (!isNaN(ra) && !isNaN(a) && !isNaN(v)) ? `después de +${a}%` : '';
+
+    document.getElementById('r3d').textContent = (!isNaN(rd) && !isNaN(d) && !isNaN(v)) ? fmt(rd) : '—';
+    document.getElementById('r3dl').textContent = (!isNaN(rd) && !isNaN(d) && !isNaN(v)) ? `después de -${d}%` : '';
+  }
+
+  function calc4() {
+    const a = parseFloat(document.getElementById('c4a').value);
+    const b = parseFloat(document.getElementById('c4b').value);
+    const res = ((b - a) / a) * 100;
+    const r4 = document.getElementById('r4');
+    if (isNaN(res) || a === 0) {
+      r4.textContent = '—';
+      document.getElementById('r4l').textContent = '';
+      r4.style.color = 'var(--accent2)';
+    } else {
+      r4.textContent = (res >= 0 ? '+' : '') + fmt(res) + '%';
+      r4.style.color = res >= 0 ? '#c8f135' : '#ff6b35';
+      document.getElementById('r4l').textContent = res >= 0 ? 'aumento' : 'disminución';
+    }
+  }
+</script>
+</body>
+</html>
